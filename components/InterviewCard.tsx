@@ -5,8 +5,9 @@ import Link from 'next/link'
 import { getRandomInterviewCover } from "@/lib/utils"
 import { Button } from './ui/button'
 import DisplayTechIcons from "@/components/DisplayTechIcons"
+import { getFeedbackByInterviewId } from '@/lib/actions/general.action'
 
-const InterviewCard = ({
+const InterviewCard = async ({
   interviewId,
   userId,
   role,
@@ -14,11 +15,26 @@ const InterviewCard = ({
   techstack,
   createdAt,
 }: InterviewCardProps) => {
-  const feedback = null as Feedback | null
-  const normalizedType = /mix/gi.test(type) ? "Mixed" : type
+  const feedback =
+    userId && interviewId
+      ? await getFeedbackByInterviewId({
+          interviewId,
+          userId,
+        })
+      : null;
+
+  const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
+
+  const badgeColor =
+    {
+      Behavioral: "bg-light-400",
+      Mixed: "bg-light-600",
+      Technical: "bg-light-800",
+    }[normalizedType] || "bg-light-600";
+
   const formattedDate = dayjs(
     feedback?.createdAt || createdAt || Date.now()
-  ).format("MMM D, YYYY")
+  ).format("MMM D, YYYY");
 
   return (
     <div className="card-border w-[360px] max-sm:w-full min-h-96">
